@@ -1,0 +1,36 @@
+apply plugin: 'java'
+apply from: rootProject.file('gradle/maven-publish.gradle')
+
+sourceCompatibility = 1.6
+
+dependencies {
+    compileOnly "com.android.tools.lint:lint-api:$lintApiVersion"
+    compileOnly "com.android.tools.lint:lint-checks:$lintApiVersion"
+    testImplementation 'junit:junit:4.12'
+    testImplementation "com.android.tools.lint:lint:$lintApiVersion"
+    testImplementation "com.android.tools.lint:lint-tests:$lintApiVersion"
+    testImplementation "com.android.tools:testutils:$lintApiVersion"
+}
+
+sourceSets {
+    test {
+        // seem to need this to make sure the resources end up in the right place for tests
+        output.resourcesDir = "build/classes/test"
+    }
+}
+
+jar {
+    manifest {
+        attributes("Lint-Registry": "nl.littlerobots.rxlint.RxIssueRegistry")
+    }
+}
+
+configurations {
+    lintChecks
+}
+
+dependencies {
+    lintChecks files(jar)
+}
+
+defaultTasks 'assemble'
